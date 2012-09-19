@@ -1,0 +1,18 @@
+syntax error at fileup.cgi line 31, near ")
+#print OUT ",$name,length($upfile)";
+#print OUT ",$time";
+close"
+Execution of fileup.cgi aborted due to compilation errors.
+syntax error at fileup.cgi line 31, near ")
+#print OUT ",$name,$length($upfile)";
+#print OUT ",$time";
+close"
+Execution of fileup.cgi aborted due to compilation errors.
+syntax error at fileup.cgi line 28, near ")
+
+open"
+Execution of fileup.cgi aborted due to compilation errors.
+syntax error at fileup.cgi line 28, near ")
+
+open"
+Execution of fileup.cgi aborted due to compilation errors.
