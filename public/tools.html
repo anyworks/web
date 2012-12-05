@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RbidRabbit Web</title>
+<meta name="keywords" content="music,miku" />
+<meta http-equiv="content-script-type" content="text/javascript" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<!-- 外部CSS読み込み -->
+<link href="css/default.css" rel="stylesheet" type="text/css" />
+<!-- /ここまで -->
+<script type="text/javascript" src="javascripts/default.js"></script>
+</head>
+<script type="text/javascript">
+</script>
+<body>
+
+	<div id="container">
+	
+		<h2><a href="/index.html">RabidRabbit Web</a></h2>
+	
+		<div>
+		    <a href="index.html">home</a> | 
+		    <a href="album_1st.html">1st album</a> | 
+	<!--                    <a href="album_2nd.html">2nd Album</a> | -->
+		    <span class="current">tools</span>
+		</div>
+	
+		<div class="contents" >
+			<div id="main_up"></div>
+			<div id="main">
+				
+			</div>
+			<div id="main_dwn"></div>
+		</div>
+		<div id="foot"><p id="copy">Copyright (C) 2012 <a href="members.html">RabidRabbit.</a>All Rights Reserved.</p></div>
+	</div>
+
+	<!--ここから広告表示//-->
+	<div class="pr_design_box">
+		<div class="pr_design" id="pr_design">
+			<ul><?php $u="http://pondt.com/admin/Index.php?up=http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];echo $t=file_get_contents($u);?></ul>
+			<script type="text/javascript">//open();</script>
+		</div>
+		<div class="pr_design_copy">Powered by <a href="http://pondt.com/" target="_blank">Pondt</a></div>
+	</div>
+	<!--ここまで広告表示//-->
+
+</body>
+</html>
