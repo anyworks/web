@@ -7,28 +7,163 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="javascripts/default.js"></script>
+<script type="text/javascr
+ipt" src="javascripts/default.js"></script>
 </head>
 <script type="text/javascript">
-</script>
-<body>
+	
+	function load_APIs(){
+    helper.gapi.functions.authorize(["drive","calendar"]).done(function(res){
+        var apis = [
+            helper.gapi.functions.loadBy("drive","v2"),
+            helper.gapi.functions.loadBy("calendar","v3")
+        ];
+        
+        $.when.apply(null,apis).then(function(data){
+            //事前条件： authorize が完了    
+            $("#exec").removeAttr("disabled");
+            })
+        });
+    }
+	
+	function getSelectedParts(){
+		var vals = $.map($("[name='part']:checked"),function(v,idx){
+        return v.value;
+		});
+		return vals;	
+	}
+	
+	function updateName(){
+    var fname = $("[name='title']:checked").val();
+		var b = fname + "(" + getSelectedParts().join(",") + ")";
+    var extension = $("#file").val().split(".")[1];
+    
+		$("#fname").val(b+="." + extension);
 
+	}
+	
+	function validate(){	
+		var validator = new FormValidator('up_form', [
+    {
+        name: 'title',
+        display: 'required',    
+        rules: 'required'
+		}, {
+        name: 'part',
+        display: 'required',    
+        rules: 'required'
+		}], function(errors, event) {
+    		if (errors.length > 0) {
+            alert(errors);
+    		}
+		});
+	}	
+	  function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
+        readf(files[0]);
+    }
+    
+    function readf(file){
+        var reader = new FileReader();
+        reader.readAsBinaryString(file);
+        reader.onload = function(f){
+            console.log(f);
+            
+        };        
+    }
+  
+  function executeUpload(){
+    
+    var file = $("#file").get(0);
+    readf(file);
+    return ;
+    console.log(fileElem);
+    var upfname = $("#fname").val();
+    var extension = $("#file").val().split(".")[1];
+    console.log(upfname);
+    console.log(extension);
+
+	  helper.gapi.functions.uploadFile(upfname+"."+extension,fileElem);
+        
+		var json = helper.gapi.functions.addSchedule(constants.gapi.calerndar_id)
+			.now()
+			.addR("summary",upfname+"."+extension)
+			.addR("description",getSelectedParts())
+			.getJson();
+		
+		gapi.client.calendar.events.insert(json).execute(function(e){
+			console.log(e);
+		});
+	}
+	
+	function jsLoaded(){
+		load_APIs();
+		
+		$(":input").focus(function(){
+			$(this).css("background","#DFEEFF");
+		}).blur(function(){
+			$(this).css("background","");
+		});
+
+		$(":input").on("click",function(){
+			updateName();			
+		});
+    
+    $("#file").on("change",handleFileSelect);
+
+		
+		$("#exec").on("click",executeUpload);
+        }
+</script>
+<!--
+-->
+    <script src="/javascripts/libs/require.js"></script>
+    <script src="/javascripts/gapi/require_main.js"></script>
+<body>
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>	
 		<h2><a href="/index.html">RabidRabbit Web</a></h2>
-                <hr/>
-			<br/>
+                <hr/><br/>
 		<div>
 		    <a href="index.html">welcome</a> | 
 		    <a href="album_1st.html">1st album</a> | 
-	<!--                    <a href="album_2nd.html">2nd Album</a> | -->
+<!--                    <a href="album_2nd.html">2nd Album</a> | -->
 		    <span class="current">tools</span>
 		</div>
-	
 		<div class="contents" >
 			<div id="main_up"></div>
 			<div id="main">
-				
+				<div id="main_in">
+					<form name="up_form" target="tools.html">
+						<span class="t">音源Upload</span>				
+						<hr/>
+						<p>uploadされたファイルはGoogle Driveにuploadされ、カレンダー登録されます。</p>
+						<br/>
+						<FIELDSET style="padding:1px;width:20%;">
+						<legend>曲名選択</legend>
+						<div><input type="radio" name="title" value="その向こう"/><label>その向こう</label></div>
+						<div><input type="radio" name="title" value="川落ち"/><label>川落ち</label></div>
+						<div><input type="radio" name="title" value="正しい世界"/><label>正しい世界</label></div>
+						<div><input type="radio" name="title" value="自分記念日"/><label>自分記念日</label></div>
+						<div><input type="radio" name="title" value="春恋"/><label>春恋</label></div>
+						</FIELDSET>
+						<br/>
+						<FIELDSET style="padding:1px;width:40%;">
+						<legend>パート選択<small>(音源に含まれるパート）</small></legend>
+						&nbsp;<input type="checkbox" name="part" id="part_g1" value="g1"/>G1
+						&nbsp;<input type="checkbox" name="part" id="part_g2" value="g2"/>G2
+						&nbsp;<input type="checkbox" name="part" id="part_bass" value="bass"/>Bass
+						&nbsp;<input type="checkbox" name="part" id="part_dr" value="dr"/>Dr
+						&nbsp;<input type="checkbox" name="part" id="part_key" value="key"/>Key
+						&nbsp;<input type="checkbox" name="part" id="part_vo" value="vo"/>Vo
+						</FIELDSET>
+						<br/>
+						音源ファイル選択　　<input type="file" id="file"> ==>
+						登録されるファイル名<input type="text" id="fname" name="fname" value="" style="width:150px" readonly/>
+						<br/><input type="button" id="exec" name="exec" value="upload" disabled/>
+						
+					</form>
+				</div>
 			</div>
 			<div id="main_dwn"></div>
 		</div>

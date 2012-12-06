@@ -2,6 +2,10 @@
 
 /*■初期設定*/
 
+input[type='checkbox'] ,input[type='radio'],select{
+vertical-align:middle;
+}
+
 body{
 	color:#000000;/*通常のテキストカラー*/
 	}
@@ -57,6 +61,18 @@ body{
 	margin:auto;
 	text-align:left;
 	}
+
+#container > hr {
+	color:#FF6600;	
+}
+#main_in > hr {
+	color:#FFFFFF;	
+}
+
+.t {
+	font-size:18px;	
+}
+
 h1{
 	height:16px;
 	line-height:16px;
