@@ -29,11 +29,14 @@ helper.gapi.newMultipartHelper = function(boundary){
             this._val += "--";
             return this;
         },
-        initial_body_request : function(file_name,file){
+        initial_body_request : function(file_name,file,folderid){
            type_content =  'application/octet-stream';
            var json_meta = {
                 title : file_name,
-                mimeType : type_content
+                mimeType : type_content,
+                parents : [
+                    {"id":folderid}
+                ]
            }
             //build first part       
             this.delimiter();
@@ -112,12 +115,12 @@ helper.gapi.functions.listFilesBy = function (gcond){
 }
 
 //filder not use
-helper.gapi.functions.uploadFile = function (fileName,uploadFile,folder){
+helper.gapi.functions.uploadFile = function (fileName,uploadFile,folderid){
     var df = new $.Deferred();
     var reader = new FileReader();
     reader.onload = function(e) {
        var mth = helper.gapi.newMultipartHelper();
-       var multipartRequestBody = mth.initial_body_request(fileName,reader.result);
+       var multipartRequestBody = mth.initial_body_request(fileName,reader.result,folderid);
     
        var request = gapi.client.request({
            'path': '/upload/drive/v2/files',
