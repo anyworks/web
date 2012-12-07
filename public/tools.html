@@ -15,6 +15,16 @@
 </head>
 <script type="text/javascript">
 	var selectedFile="";
+  
+  var folderMap = {
+    "その向こう":"0B3pnnGKgIx1uWFYtT19vTy1KbDQ",
+    "川落ち":"0B3pnnGKgIx1uc05FdGo5Tlg2bXc",
+    "正しい世界":"0B3pnnGKgIx1uNVYteXZIRGZtcFE",
+    "自分記念日":"0B3pnnGKgIx1uVG5mRVpnVEdZWjA",
+    "NOW!":"0B3pnnGKgIx1uZXFRX0NqNFhqQ2s",
+    "春恋":"0B3pnnGKgIx1ua1Vwanc3U2lpdzg"
+  }
+  
 	function load_APIs(){
     helper.gapi.functions.authorize(["drive","calendar"]).done(function(res){
         var apis = [
@@ -67,11 +77,12 @@
     if(!ret){
         return;
     }
+    $("exec").attr("disabled","disabled");
     console.log(selectedFile);
-    var f = $("file").get(0);
+    
     var upfname = $("#fname").val();
-
-	  var prms = helper.gapi.functions.uploadFile(upfname,selectedFile);
+    var folderid = folderMap[$("[name='title']:checked").val()];
+	  var prms = helper.gapi.functions.uploadFile(upfname,selectedFile,folderid);
     prms.done(function(data){
         var parts = getSelectedParts();
         var downloadURL = data["webContentLink"];
@@ -88,10 +99,12 @@
         gapi.client.calendar.events.insert(json).execute(function(e){
         	$.pnotify({
             title: "upload処理完了",
-            text: "カレンダー登録し、処理が正常に終了しました"
+            text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"
           });
           console.log(e);
         });
+        
+        $("exec").removeAttr("disabled");
     });
 	}
 	
@@ -147,17 +160,18 @@
 						<div><input type="radio" name="title" value="川落ち"/><label>川落ち</label></div>
 						<div><input type="radio" name="title" value="正しい世界"/><label>正しい世界</label></div>
 						<div><input type="radio" name="title" value="自分記念日"/><label>自分記念日</label></div>
+						<div><input type="radio" name="title" value="NOW!"/><label>NOW!</label></div>
 						<div><input type="radio" name="title" value="春恋"/><label>春恋</label></div>
 						</FIELDSET>
 						<br/>
 						<FIELDSET style="padding:1px;width:40%;">
 						<legend>パート選択<small>(音源に含まれるパート）</small></legend>
-						&nbsp;<input type="checkbox" name="part" id="part_g1" value="g1"/>G1
-						&nbsp;<input type="checkbox" name="part" id="part_g2" value="g2"/>G2
-						&nbsp;<input type="checkbox" name="part" id="part_bass" value="bass"/>Bass
-						&nbsp;<input type="checkbox" name="part" id="part_dr" value="dr"/>Dr
-						&nbsp;<input type="checkbox" name="part" id="part_key" value="key"/>Key
-						&nbsp;<input type="checkbox" name="part" id="part_vo" value="vo"/>Vo
+						&nbsp;<input type="checkbox" name="part" id="part_g1" value="G1"/>G1
+						&nbsp;<input type="checkbox" name="part" id="part_g2" value="G2"/>G2
+						&nbsp;<input type="checkbox" name="part" id="part_bass" value="Bass"/>Bass
+						&nbsp;<input type="checkbox" name="part" id="part_dr" value="Dr"/>Dr
+						&nbsp;<input type="checkbox" name="part" id="part_key" value="Key"/>Key
+						&nbsp;<input type="checkbox" name="part" id="part_vo" value="Vo"/>Vo
 						</FIELDSET>
 						<br/>
 						音源ファイル選択　　<input type="file" id="file"> ==>
