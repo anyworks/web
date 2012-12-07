@@ -63,7 +63,7 @@ helper.gapi.newMultipartHelper = function(boundary){
 }
 
 //short cut functions
-helper.gapi.functions.authorize = function(scopeNames){
+helper.gapi.functions.authorize = function(scopeNames,force){
     scopeNames = scopeNames || ['drive'];   //test code default drive
     var scopesAry = $.map(scopeNames,function(v,idx){
         return "https://www.googleapis.com/auth/" + v;
@@ -74,9 +74,14 @@ helper.gapi.functions.authorize = function(scopeNames){
     var df = $.Deferred();
     gapi.auth.authorize(
     {client_id: constants.gapi.client_id, scope: scopes, immediate: true}, function(res){
-        if(!gapi.auth || !gapi.auth.getToken()){
+        if((!gapi.auth || !gapi.auth.getToken())){
             console.log("!!!auth fail!!![token]" + gapi.auth.getToken());
-            df.reject("gapi.auth not exists:" + scopes);
+            if(!force){
+                df.reject("gapi.auth not exists:" + scopes);
+            }else{
+                console.log("auth fail[force mode]");
+                df.resolve("auth fail[force mode]");
+            }
         }else{
             console.log("auth success[token]" + gapi.auth.getToken());
             df.resolve(res);
@@ -135,7 +140,11 @@ helper.gapi.functions.uploadFile = function (fileName,uploadFile,folderid){
        });                
        request.execute(function(e){
           console.log(e);
-          df.resolve(e);
+          if(e.error){
+              df.reject(e);
+          }else{
+              df.resolve(e);
+          }
        });
     }
     reader.readAsBinaryString(uploadFile);
@@ -160,7 +169,7 @@ helper.gapi.functions.createFolder = function(folderName){
   
   
 //gapi.client.calendar.events.insert
-helper.gapi.functions.addSchedule = function (calendarId){
+helper.gapi.functions.addScheduler = function (calendarId){
     
     var module = {
         "calendarId":calendarId,

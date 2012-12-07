@@ -26,7 +26,7 @@
   }
   
 	function load_APIs(){
-    helper.gapi.functions.authorize(["drive","calendar"]).done(function(res){
+    helper.gapi.functions.authorize(["drive","calendar"],false).done(function(res){
         var apis = [
             helper.gapi.functions.loadBy("drive","v2"),
             helper.gapi.functions.loadBy("calendar","v3")
@@ -83,29 +83,45 @@
     var upfname = $("#fname").val();
     var folderid = folderMap[$("[name='title']:checked").val()];
 	  var prms = helper.gapi.functions.uploadFile(upfname,selectedFile,folderid);
-    prms.done(function(data){
+    $.when(prms).then(function(data){
         var parts = getSelectedParts();
         var downloadURL = data["webContentLink"];
         $.pnotify({
             title: "upload完了",
             text: upfname + "がuploadされました(<" + "a href='" + downloadURL + "'>download</>"
           });
-        var json = helper.gapi.functions.addSchedule(constants.gapi.calerndar_id)
+        var json = helper.gapi.functions.addScheduler(constants.gapi.calerndar_id)
           .now()
           .addR("summary",upfname)
           .addR("description","file:" + downloadURL + "<br/>parts:" + getSelectedParts())
           .getJson();
         
         gapi.client.calendar.events.insert(json).execute(function(e){
+          console.log(e);
+          if(e.error){
+            $.pnotify({
+                title: "カレンダー登録に失敗",
+                text: "code:" + e.error.code + "\r\nmessage:" +e.error.message,
+                type:"error"
+            });
+            
+          }
         	$.pnotify({
             title: "upload処理完了",
             text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"            
           });
-          console.log(e);
         });
         
         $("exec").removeAttr("disabled");
-    });
+    },  //reject
+        function(data){
+        	$.pnotify({
+            title: "upload error",
+            text: "code:" + data.error.code + "\r\nmessage:" +data.error.message,
+            type:"error"
+          });
+        }
+    );
 	}
 	
 	function jsLoaded(){
@@ -115,6 +131,7 @@
  
           window.console = {};
           window.console.log = function(str){
+            return str;
           };
      }
     
