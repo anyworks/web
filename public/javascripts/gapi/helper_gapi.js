@@ -113,6 +113,7 @@ helper.gapi.functions.listFilesBy = function (gcond){
 
 //filder not use
 helper.gapi.functions.uploadFile = function (fileName,uploadFile,folder){
+    var df = new $.Deferred();
     var reader = new FileReader();
     reader.onload = function(e) {
        var mth = helper.gapi.newMultipartHelper();
@@ -129,9 +130,13 @@ helper.gapi.functions.uploadFile = function (fileName,uploadFile,folder){
            },
            'body': multipartRequestBody
        });                
-       request.execute(function(e){console.log(e)});
+       request.execute(function(e){
+          console.log(e);
+          df.resolve(e);
+       });
     }
     reader.readAsBinaryString(uploadFile);
+    return df.promise();
 }
 
 /**

@@ -7,8 +7,11 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
-<script type="text/javascr
-ipt" src="javascripts/default.js"></script>
+
+<link href="/javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
+<link href="/javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
+<!-- Include this file if you are using Pines Icons. -->
+<link href="/javascripts/libs/pnotify-1.2.0/use for pines style icons/jquery.pnotify.default.icons.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <script type="text/javascript">
 	var selectedFile="";
@@ -60,22 +63,36 @@ ipt" src="javascripts/default.js"></script>
 	}	
   
   function executeUpload(){
-    
+    var ret = confirm("uploadします");
+    if(!ret){
+        return;
+    }
     console.log(selectedFile);
     var f = $("file").get(0);
     var upfname = $("#fname").val();
 
-	  helper.gapi.functions.uploadFile(upfname,selectedFile);
+	  var prms = helper.gapi.functions.uploadFile(upfname,selectedFile);
+    prms.done(function(data){
+        var parts = getSelectedParts();
+        var downloadURL = data["webContentLink"];
+        $.pnotify({
+            title: "upload完了",
+            text: upfname + "がuploadされました(<" + "a href='" + downloadURL + "'>download</>"
+          });
+        var json = helper.gapi.functions.addSchedule(constants.gapi.calerndar_id)
+          .now()
+          .addR("summary",upfname)
+          .addR("description","file:" + downloadURL + "<br/>parts:" + getSelectedParts())
+          .getJson();
         
-		var json = helper.gapi.functions.addSchedule(constants.gapi.calerndar_id)
-			.now()
-			.addR("summary",upfname)
-			.addR("description",getSelectedParts())
-			.getJson();
-		
-		gapi.client.calendar.events.insert(json).execute(function(e){
-			console.log(e);
-		});
+        gapi.client.calendar.events.insert(json).execute(function(e){
+        	$.pnotify({
+            title: "upload処理完了",
+            text: "カレンダー登録し、処理が正常に終了しました"
+          });
+          console.log(e);
+        });
+    });
 	}
 	
 	function jsLoaded(){
@@ -94,15 +111,16 @@ ipt" src="javascripts/default.js"></script>
     $("#file").on("change",function(evt){
             selectedFile = evt.target.files[0]; // FileList object
     });
-
 		
 		$("#exec").on("click",executeUpload);
-        }
+
+    $.pnotify.defaults.styling = "jqueryui";
+  }
 </script>
 <!--
 -->
-    <script src="/javascripts/libs/require.js"></script>
-    <script src="/javascripts/gapi/require_main.js"></script>
+    <script data-main="/javascripts/require_main"  src="/javascripts/libs/require.js"></script>
+    
 <body>
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>	
@@ -145,7 +163,6 @@ ipt" src="javascripts/default.js"></script>
 						音源ファイル選択　　<input type="file" id="file"> ==>
 						登録されるファイル名<input type="text" id="fname" name="fname" value="" style="width:150px" readonly/>
 						<br/><input type="button" id="exec" name="exec" value="upload" disabled/>
-						
 					</form>
 				</div>
 			</div>
