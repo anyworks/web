@@ -115,8 +115,8 @@ helper.gapi.functions.listFilesBy = function (gcond){
 helper.gapi.functions.uploadFile = function (fileName,uploadFile,folder){
     var reader = new FileReader();
     reader.onload = function(e) {
-       var helper = helper.gapi.newMultipartHelper();
-       var multipartRequestBody = helper.initial_body_request(fileName,reader.result);
+       var mth = helper.gapi.newMultipartHelper();
+       var multipartRequestBody = mth.initial_body_request(fileName,reader.result);
     
        var request = gapi.client.request({
            'path': '/upload/drive/v2/files',
@@ -125,7 +125,7 @@ helper.gapi.functions.uploadFile = function (fileName,uploadFile,folder){
                        'uploadType': 'multipart'
                      },
            'headers': {
-             'Content-Type': helper.content_type_multipart()
+             'Content-Type': mth.content_type_multipart()
            },
            'body': multipartRequestBody
        });                

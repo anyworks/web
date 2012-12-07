@@ -11,7 +11,7 @@
 ipt" src="javascripts/default.js"></script>
 </head>
 <script type="text/javascript">
-	
+	var selectedFile="";
 	function load_APIs(){
     helper.gapi.functions.authorize(["drive","calendar"]).done(function(res){
         var apis = [
@@ -58,36 +58,18 @@ ipt" src="javascripts/default.js"></script>
     		}
 		});
 	}	
-	  function handleFileSelect(evt) {
-        var files = evt.target.files; // FileList object
-        readf(files[0]);
-    }
-    
-    function readf(file){
-        var reader = new FileReader();
-        reader.readAsBinaryString(file);
-        reader.onload = function(f){
-            console.log(f);
-            
-        };        
-    }
   
   function executeUpload(){
     
-    var file = $("#file").get(0);
-    readf(file);
-    return ;
-    console.log(fileElem);
+    console.log(selectedFile);
+    var f = $("file").get(0);
     var upfname = $("#fname").val();
-    var extension = $("#file").val().split(".")[1];
-    console.log(upfname);
-    console.log(extension);
 
-	  helper.gapi.functions.uploadFile(upfname+"."+extension,fileElem);
+	  helper.gapi.functions.uploadFile(upfname,selectedFile);
         
 		var json = helper.gapi.functions.addSchedule(constants.gapi.calerndar_id)
 			.now()
-			.addR("summary",upfname+"."+extension)
+			.addR("summary",upfname)
 			.addR("description",getSelectedParts())
 			.getJson();
 		
@@ -109,7 +91,9 @@ ipt" src="javascripts/default.js"></script>
 			updateName();			
 		});
     
-    $("#file").on("change",handleFileSelect);
+    $("#file").on("change",function(evt){
+            selectedFile = evt.target.files[0]; // FileList object
+    });
 
 		
 		$("#exec").on("click",executeUpload);
