@@ -8,10 +8,10 @@
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
 
-<link href="/javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
-<link href="/javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
+<link href="javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
+<link href="javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
 <!-- Include this file if you are using Pines Icons. -->
-<link href="/javascripts/libs/pnotify-1.2.0/use for pines style icons/jquery.pnotify.default.icons.css" media="all" rel="stylesheet" type="text/css" />
+<link href="javascripts/libs/pnotify-1.2.0/use for pines style icons/jquery.pnotify.default.icons.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <script type="text/javascript">
 	var selectedFile="";
@@ -47,31 +47,13 @@
 	}
 	
 	function updateName(){
-    var fname = $("[name='title']:checked").val();
+                var fname = $("[name='title']:checked").val();
 		var b = fname + "(" + getSelectedParts().join(",") + ")";
-    var extension = $("#file").val().split(".")[1];
+                var extension = $("#file").val().split(".")[1];
     
 		$("#fname").val(b+="." + extension);
-
 	}
 	
-	function validate(){	
-		var validator = new FormValidator('up_form', [
-    {
-        name: 'title',
-        display: 'required',    
-        rules: 'required'
-		}, {
-        name: 'part',
-        display: 'required',    
-        rules: 'required'
-		}], function(errors, event) {
-    		if (errors.length > 0) {
-            alert(errors);
-    		}
-		});
-	}	
-  
   function executeUpload(){
     var ret = confirm("uploadします");
     if(!ret){
@@ -97,82 +79,75 @@
           .getJson();
         
         gapi.client.calendar.events.insert(json).execute(function(e){
-          console.log(e);
-          if(e.error){
+            console.log(e);
+            if(e.error){
+              $.pnotify({
+                  title: "カレンダー登録に失敗",
+                  text: "code:" + e.error.code + "\r\nmessage:" +e.error.message,
+                  type:"error"
+              });
+              return ;
+            }    
             $.pnotify({
-                title: "カレンダー登録に失敗",
-                text: "code:" + e.error.code + "\r\nmessage:" +e.error.message,
+                title: "upload処理完了",
+                text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"            
+              });
+        });
+        $("exec").removeAttr("disabled");
+        },  //reject
+        function(data){
+            $.pnotify({
+                title: "upload error",
+                text: "code:" + data.error.code + "\r\nmessage:" +data.error.message,
                 type:"error"
             });
-            
-          }
-        	$.pnotify({
-            title: "upload処理完了",
-            text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"            
-          });
         });
-        
-        $("exec").removeAttr("disabled");
-    },  //reject
-        function(data){
-        	$.pnotify({
-            title: "upload error",
-            text: "code:" + data.error.code + "\r\nmessage:" +data.error.message,
-            type:"error"
-          });
-        }
-    );
-	}
-	
-	function jsLoaded(){
-    $.pnotify.defaults.styling = "jqueryui";
-
-     if (!('console' in window)) {
- 
-          window.console = {};
-          window.console.log = function(str){
-            return str;
-          };
-     }
-    
-		load_APIs();
-		
-		$(":input").focus(function(){
-			$(this).css("background","#DFEEFF");
-		}).blur(function(){
-			$(this).css("background","");
-		});
-
-		$(":input").on("click",function(){
-			updateName();			
-		});
-    
-    if(!('File' in window)){
-        	$.pnotify({
-            title: "ブラウザは、HTML5をサポートしていません",
-            text: "この画面を使用するには、HTML5をサポートしたブラウザが必要です",
-            type : "error"
-          });
     }
+	
+    function jsLoaded(){
+        $.pnotify.defaults.styling = "jqueryui";
+        if (!('console' in window)) {
+    
+             window.console = {};
+             window.console.log = function(str){
+               return str;
+             };
+        }
+        load_APIs();
+        
+        $(":input").focus(function(){
+                $(this).css("background","#DFEEFF");
+        }).blur(function(){
+                $(this).css("background","");
+        });
+
+        $(":input").on("click",function(){
+                updateName();			
+        });
+    
+        if(!('File' in window)){
+                    $.pnotify({
+                title: "ブラウザは、HTML5をサポートしていません",
+                text: "この画面を使用するには、HTML5をサポートしたブラウザが必要です",
+                type : "error"
+              });
+        }
     
     $("#exec").on("click",executeUpload);
-
-
     $("#file").on("change",function(evt){
+            updateName();
             selectedFile = evt.target.files[0]; // FileList object
     });
-		
-
   }
 </script>
 <!--
 -->
-    <script data-main="/javascripts/require_main"  src="/javascripts/libs/require.js"></script>
+    <script data-main="javascripts/require_main"  src="javascripts/libs/require.js"></script>
     
 <body>
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>	
-		<h2><a href="/index.html">RabidRabbit Web</a></h2>
+		<h2><a href="index.html">RabidRabbit Web</a></h2>
                 <hr/><br/>
 		<div>
 		    <a href="index.html">welcome</a> | 
@@ -217,7 +192,7 @@
 			</div>
 			<div id="main_dwn"></div>
 		</div>
-		<div id="foot"><p id="copy">Copyright (C) 2012 <a href="members.html">RabidRabbit.</a>All Rights Reserved.</p></div>
+		<div id="foot"><p id="copy">Copyright (C) 2012 <a href="index.html">RabidRabbit.</a>All Rights Reserved.</p></div>
 	</div>
 
 	<!--ここから広告表示//-->
