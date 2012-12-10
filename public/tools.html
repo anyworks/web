@@ -1,7 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html> 
 <html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8" />
 <title>RbidRabbit Web</title>
 <meta http-equiv="content-script-type" content="text/javascript" />
 <meta http-equiv="content-style-type" content="text/css" />
@@ -26,7 +27,8 @@
   }
   
 	function load_APIs(){
-    helper.gapi.functions.authorize(["drive","calendar"],false).done(function(res){
+    helper.gapi.functions.authorize(["drive","calendar"],false).then(
+        function(res){
         var apis = [
             helper.gapi.functions.loadBy("drive","v2"),
             helper.gapi.functions.loadBy("calendar","v3")
@@ -36,7 +38,16 @@
             //事前条件： authorize が完了    
             $("#exec").removeAttr("disabled");
             })
-        });
+        },
+        function(e){
+              $.pnotify({
+                  title: "ドキュメントUploadが許可されていません。",
+                  text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、当画面は使用できます",
+                  type:"error"
+              });
+              return ;
+        }
+        );
     }
 	
 	function getSelectedParts(){
@@ -94,8 +105,8 @@
               });
         });
         $("exec").removeAttr("disabled");
-        },  //reject
-        function(data){
+        },  
+        function(data){　//reject
             $.pnotify({
                 title: "upload error",
                 text: "code:" + data.error.code + "\r\nmessage:" +data.error.message,

@@ -1,5 +1,6 @@
 require([
-    "/javascripts/gapi/constants.js"
+     "javascripts/gapi/constants.js"
+    ,"javascripts/libs/modernizr.js"
 ],
 function() {
  require([

@@ -1,13 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8" />
 <title>RbidRabbit Web</title>
 <meta http-equiv="content-script-type" content="text/javascript" />
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="javascripts/default.js"></script>
+<script type="text/javascript">
+    function jsLoaded(){
+        $('#contentsBox').load('contents1.html');
+        $('.menu').click(function(){
+            var name = $(this).attr('id');
+            $(".menu").attr("class","menu");
+            $(this).attr("class","menu current");
+            $('#main_in').load('pages/' + name + '.html');
+        });
+        $("#welcome").trigger("click");
+
+        if (Modernizr.touch) {
+             alert("mobile");
+             //jquery.jcarousel.js
+        } else {
+           alert("pc");
+        }
+    }
+</script>
+    <script data-main="javascripts/require_chk_client"  src="javascripts/libs/require.js"></script>    
 
 </head>
 <body>
@@ -18,16 +39,15 @@
                 <hr/>
 		<br/>
 		<div>
-		    <span class="current">welcome</span>| 
-		    <a href="album_1st.html">1st album</a> | 
+		    <a href="#" id="welcome" class="menu">welcome</a>| 
+		    <a href="#" id="1st" class="menu">1st album</a> | 
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->
-		    <a href="tools.html">tools</a>
 		</div>
 
                 <div id="main_up"></div>
                 <div id="main">
                     <div id="main_in">
-                        welcome message
+                        
                     </div>
                 </div>
                 <div id="main_dwn"></div>

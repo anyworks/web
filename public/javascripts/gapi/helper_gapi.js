@@ -75,7 +75,7 @@ helper.gapi.functions.authorize = function(scopeNames,force){
     gapi.auth.authorize(
     {client_id: constants.gapi.client_id, scope: scopes, immediate: true}, function(res){
         if((!gapi.auth || !gapi.auth.getToken())){
-            console.log("!!!auth fail!!![token]" + gapi.auth.getToken());
+            console.log("!!!auth fail!!!");
             if(!force){
                 df.reject("gapi.auth not exists:" + scopes);
             }else{

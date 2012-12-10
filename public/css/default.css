@@ -97,7 +97,13 @@ h2 a:hover{
 	text-decoration:none;
 	}
 .current{
-	color:#FFFFFF;
+    color:#FFFFFF;
+    text-decoration: none;
+	}
+
+.dl_icon{
+    width:32px;
+    height:32px;
 	}
 
 
@@ -114,7 +120,7 @@ h2 a:hover{
 	padding:6px;
 	}
 #main_in{
-	height:400px;
+	height:440px;
 	overflow:auto;
 	padding:10px;
 	}
