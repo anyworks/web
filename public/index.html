@@ -8,24 +8,17 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="javascripts/default.js"></script>
 <script type="text/javascript">
-    function jsLoaded(){
-        $('#contentsBox').load('contents1.html');
-        $('.menu').click(function(){
-            var name = $(this).attr('id');
-            $(".menu").attr("class","menu");
-            $(this).attr("class","menu current");
-            $('#main_in').load('pages/' + name + '.html');
-        });
-        $("#welcome").trigger("click");
-
+    function require_check_client_finish(){
         if (Modernizr.touch) {
-             alert("mobile");
-             //jquery.jcarousel.js
+//            $('#main').live('swipeleft',function(){$("1st").trigger("click")});
+            
         } else {
-           alert("pc");
         }
+    }
+    
+    function swipe_func(){
+        var tgts = $(".menu");
     }
 </script>
     <script data-main="javascripts/require_chk_client"  src="javascripts/libs/require.js"></script>    
@@ -39,15 +32,25 @@
                 <hr/>
 		<br/>
 		<div>
-		    <a href="#" id="welcome" class="menu">welcome</a>| 
-		    <a href="#" id="1st" class="menu">1st album</a> | 
+		    <a href="index.html" id="welcome" class="menu current">welcome</a>| 
+		    <a href="album_1st.html" id="1st" class="menu">1st album</a> | 
+		    <a href="tools.html" id="tools" class="menu">tool</a> | 
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->
 		</div>
 
                 <div id="main_up"></div>
                 <div id="main">
-                    <div id="main_in">
-                        
+                    <div id="main_in" class="songs">
+                        <h4>ここは、RabidRabbitいうバンドのサイトです</h4>
+                        <p>
+                        <div>
+                            特筆する所もない、よくある社会人バンドとして活動しています。<br/>
+                            下手なりに<a href="album_1st.html">オリジナルで曲</a>を作っていたりするので興味があればどうぞ<br/>
+                            <p>
+                                ちなみに、現在は2nd albumのレコーディング中（宅録）
+                            </p>
+                        </div>
+                        </p>
                     </div>
                 </div>
                 <div id="main_dwn"></div>

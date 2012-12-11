@@ -9,7 +9,7 @@ function() {
         requires.push("javascripts/libs/mobile/jquery.mobile-1.2.0.min.js");
     }
     require(requires,function(){
-        jsLoaded();
+        require_check_client_finish();
     });
 }
 );

@@ -27,7 +27,7 @@
   }
   
 	function load_APIs(){
-    helper.gapi.functions.authorize(["drive","calendar"],false).then(
+    helper.gapi.functions.authorize(["drive.file","calendar"],false).then(
         function(res){
         var apis = [
             helper.gapi.functions.loadBy("drive","v2"),
@@ -42,7 +42,7 @@
         function(e){
               $.pnotify({
                   title: "ドキュメントUploadが許可されていません。",
-                  text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、当画面は使用できます",
+                  text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
                   type:"error"
               });
               return ;
@@ -105,7 +105,7 @@
               });
         });
         $("exec").removeAttr("disabled");
-        },  
+        },
         function(data){　//reject
             $.pnotify({
                 title: "upload error",
@@ -115,8 +115,12 @@
         });
     }
 	
-    function jsLoaded(){
+    function require_tools_finish(){
         $.pnotify.defaults.styling = "jqueryui";
+        $.pnotify({
+            title: "ライブラリをロードしています....",
+            text: "ロード完了後にuploadボタンが有効化され使用できるようになります。"
+        });
         if (!('console' in window)) {
     
              window.console = {};
@@ -153,7 +157,7 @@
 </script>
 <!--
 -->
-    <script data-main="javascripts/require_main"  src="javascripts/libs/require.js"></script>
+    <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
     
 <body>
 	<div id="container">
@@ -161,10 +165,10 @@
 		<h2><a href="index.html">RabidRabbit Web</a></h2>
                 <hr/><br/>
 		<div>
-		    <a href="index.html">welcome</a> | 
-		    <a href="album_1st.html">1st album</a> | 
+		    <a href="index.html" id="welcome" class="menu">welcome</a>| 
+		    <a href="album_1st.html" id="1st" class="menu">1st album</a> | 
+		    <a href="tools.html" id="tools" class="menu current">tool</a> | 
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->
-		    <span class="current">tools</span>
 		</div>
 		<div class="contents" >
 			<div id="main_up"></div>

@@ -12,9 +12,22 @@ body{
 a{
 	color:#0099FF;/*通常のリンクテキストカラー*/
 	}
+a:visited {
+	color:#FFFFFF;
+	}
 a:hover{
 	color:#FF9900;/*マウスが乗った時の通常のリンクテキストカラー*/
 	text-decoration:underline;/*マウスが乗った時下線を表示（つけない場合は underline を none へ）*/
+	}
+
+.songs a{
+	color:#000000;/*通常のリンクテキストカラー*/
+	text-decoration:none;/*マウスが乗った時下線を表示（つけない場合は underline を none へ）*/
+	}
+
+.songs a:visited{
+	color:#FF6600;
+	text-decoration:none;
 	}
 
 /*■初期設定ここまで*/
@@ -162,10 +175,14 @@ h2 a:hover{
 	font:13px;
 	line-height:18px;
 	}
+
+
 #menu ul li a:hover{
 	color:#FF6600;
 	text-decoration:underline;
 	}
+
+
 
 #foot_sps{
 	clear:left;
