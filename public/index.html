@@ -11,15 +11,37 @@
 <script type="text/javascript">
     function require_check_client_finish(){
         if (Modernizr.touch) {
-//            $('#main').live('swipeleft',function(){$("1st").trigger("click")});
-            
+//            $('#main').live('swipeleft',swipe_left);
+  //          $('#main').live('swiperight',swipe_right);
+
         } else {
         }
     }
     
-    function swipe_func(){
-        var tgts = $(".menu");
+    function swipe_left(){
+        var ids = $(".menu").map(function(){return this.href});
+        var current = $(".current").get(0);
+
+        var cur = jQuery.inArray(current.href,ids);
+        var idx_left = cur -1;
+        if(idx_left < 0)idx_left=ids.length-1
+
+        var id = $(".menu").get(idx_left).id;
+        $("#"+id).trigger("click");
     }
+
+    function swipe_right(){
+        var ids = $(".menu").map(function(){return this.href});
+        var current = $(".current").get(0);
+
+        var cur = jQuery.inArray(current.href,ids);
+        var idx_right = cur +1;
+        if(idx_right > ids.length-1)idx_right=0
+
+        var id = $(".menu").get(idx_right).id;
+        $("#"+id).trigger("click");
+    }
+
 </script>
     <script data-main="javascripts/require_chk_client"  src="javascripts/libs/require.js"></script>    
 
@@ -41,13 +63,14 @@
                 <div id="main_up"></div>
                 <div id="main">
                     <div id="main_in" class="songs">
-                        <h4>ここは、RabidRabbitいうバンドのサイトです</h4>
+                        <h4>ここは、RabidRabbitいう名を持つバンドのサイトです。</h4>
                         <p>
                         <div>
-                            特筆する所もない、よくある社会人バンドとして活動しています。<br/>
-                            下手なりに<a href="album_1st.html">オリジナルで曲</a>を作っていたりするので興味があればどうぞ<br/>
+                            特筆する所もない「社会人バンド」としてひっそり活動しています。<br/>
+                            下手の物好きながら、<a href="album_1st.html">オリジナルで曲</a>を作っていたりします。<br/>
                             <p>
-                                ちなみに、現在は2nd albumのレコーディング中（宅録）
+                                現在は2nd albumを宅録で製作中。<br/>
+                                来年春には、「2nd album」のページがお目見えする（予定）です。
                             </p>
                         </div>
                         </p>
