@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gapi tests</title>
+  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.10.0.css">
+    <script type="text/javascript" >
+        function require_gapi_finish(){
+            test( "loaded_require", function() {
+              ok(true, "Passed!" );
+            });
+            
+            test( "loaded_jquery", function() {
+              ok(jQuery, "loaded jquery!" );
+            });
+        }
+    </script>
+</head>
+<body>
+  <div id="qunit"></div>
+  <script src="http://code.jquery.com/qunit/qunit-1.10.0.js"></script>
+  <script data-main="../dist/require_gapi" src="../libs/require.js"></script>
+</body>
+</html>

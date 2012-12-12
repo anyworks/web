@@ -1,5 +1,5 @@
 require([
-     "javascripts/gapi/constants.js"
+     "gapi/dist/gapi/constants.js"
     ,"javascripts/libs/modernizr.js"
     ,"http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"
     ,'https://apis.google.com/js/client.js'
@@ -7,7 +7,7 @@ require([
 function() {
     require([
         "javascripts/libs/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"
-        ,'javascripts/gapi/helper_gapi.js'
+        ,'gapi/dist/gapi/helper_gapi.js'
     ],function(){
         require([
             "http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"
