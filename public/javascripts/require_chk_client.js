@@ -4,10 +4,10 @@ require([
 ],
 function() {
     var requires = [];
-    requires.push("javascripts/libs/mobile/jquery.jcarousel.min.js");
-    if(Modernizr.touch){
-        requires.push("javascripts/libs/mobile/jquery.mobile-1.2.0.min.js");
-    }
+//    requires.push("javascripts/libs/mobile/jquery.jcarousel.min.js");
+//    if(Modernizr.touch){
+        //requires.push("javascripts/libs/mobile/jquery.mobile-1.2.0.min.js");
+//    }
     require(requires,function(){
         require_check_client_finish();
     });

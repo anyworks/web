@@ -10,7 +10,7 @@ function() {
         ,'javascripts/gapi/helper_gapi.js'
     ],function(){
         require([
-            ,"http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"
+            "http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"
             ,"javascripts/libs/pnotify-1.2.0/jquery.pnotify.min.js"
         ],function() {
             require([
