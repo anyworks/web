@@ -17,103 +17,124 @@
 <script type="text/javascript">
 	var selectedFile="";
   
-  var folderMap = {
-    "その向こう":"0B3pnnGKgIx1uWFYtT19vTy1KbDQ",
-    "川落ち":"0B3pnnGKgIx1uc05FdGo5Tlg2bXc",
-    "正しい世界":"0B3pnnGKgIx1uNVYteXZIRGZtcFE",
-    "自分記念日":"0B3pnnGKgIx1uVG5mRVpnVEdZWjA",
-    "NOW!":"0B3pnnGKgIx1uZXFRX0NqNFhqQ2s",
-    "春恋":"0B3pnnGKgIx1ua1Vwanc3U2lpdzg"
-  }
-  
-	function load_APIs(){
-    helper.gapi.functions.authorize(["drive.file","calendar"],false).then(
-        function(res){
-        var apis = [
-            helper.gapi.functions.loadBy("drive","v2"),
-            helper.gapi.functions.loadBy("calendar","v3")
-        ];
+    var folderMap = {
+      "その向こう":"0B3pnnGKgIx1uWFYtT19vTy1KbDQ",
+      "川落ち":"0B3pnnGKgIx1uc05FdGo5Tlg2bXc",
+      "正しい世界":"0B3pnnGKgIx1uNVYteXZIRGZtcFE",
+      "自分記念日":"0B3pnnGKgIx1uVG5mRVpnVEdZWjA",
+      "NOW!":"0B3pnnGKgIx1uZXFRX0NqNFhqQ2s",
+      "春恋":"0B3pnnGKgIx1ua1Vwanc3U2lpdzg"
+    }
         
-        $.when.apply(null,apis).then(function(data){
-            //事前条件： authorize が完了    
-            $("#exec").removeAttr("disabled");
-            })
-        },
-        function(e){
-              $.pnotify({
-                  title: "ドキュメントUploadが許可されていません。",
-                  text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
-                  type:"error"
-              });
-              return ;
-        }
+    var compMaps=[
+        {part:"G1",status:"done",url:"",title:"none"},
+        {part:"G2",status:"done",url:"index.html",title:"index"},
+        {part:"Bass",status:"done",url:"",title:"none"},
+        {part:"Dr",status:"done",url:"",title:"none"},
+        {part:"Key",status:"done",url:"",title:"none"},
+        {part:"Vo",status:"close",url:"",title:"none"}
+    ];
+  
+    function load_APIs(){
+        helper.gapi.functions.authorize(["drive.file","calendar"],false).then(
+        function(res){
+            var apis = [
+                helper.gapi.functions.loadBy("drive","v2"),
+                helper.gapi.functions.loadBy("calendar","v3")
+            ];
+            
+            $.when.apply(null,apis).then(function(data){
+                //事前条件： authorize が完了    
+                $("#exec").removeAttr("disabled");
+                    var hpexp = helper.gapi.functions.createFileExplorer();
+                    hpexp.addFields(["title","webContentLink"]).list("0B3pnnGKgIx1uNVYteXZIRGZtcFE");
+                })
+            },
+            function(e){
+                  $.pnotify({
+                      title: "ドキュメントUploadが許可されていません。",
+                      text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
+                      type:"error"
+                  });
+                  return ;
+            }
         );
     }
 	
-	function getSelectedParts(){
-		var vals = $.map($("[name='part']:checked"),function(v,idx){
-        return v.value;
-		});
-		return vals;	
-	}
-	
-	function updateName(){
-                var fname = $("[name='title']:checked").val();
-		var b = fname + "(" + getSelectedParts().join(",") + ")";
-                var extension = $("#file").val().split(".")[1];
-    
-		$("#fname").val(b+="." + extension);
-	}
-	
-  function executeUpload(){
-    var ret = confirm("uploadします");
-    if(!ret){
-        return;
-    }
-    $("exec").attr("disabled","disabled");
-    console.log(selectedFile);
-    
-    var upfname = $("#fname").val();
-    var folderid = folderMap[$("[name='title']:checked").val()];
-	  var prms = helper.gapi.functions.uploadFile(upfname,selectedFile,folderid);
-    $.when(prms).then(function(data){
-        var parts = getSelectedParts();
-        var downloadURL = data["webContentLink"];
-        $.pnotify({
-            title: "upload完了",
-            text: upfname + "がuploadされました(<" + "a href='" + downloadURL + "'>download</>"
-          });
-        var json = helper.gapi.functions.addScheduler(constants.gapi.calerndar_id)
-          .now()
-          .addR("summary",upfname)
-          .addR("description","file:" + downloadURL + "<br/>parts:" + getSelectedParts())
-          .getJson();
-        
-        gapi.client.calendar.events.insert(json).execute(function(e){
-            console.log(e);
-            if(e.error){
-              $.pnotify({
-                  title: "カレンダー登録に失敗",
-                  text: "code:" + e.error.code + "\r\nmessage:" +e.error.message,
-                  type:"error"
-              });
-              return ;
-            }    
-            $.pnotify({
-                title: "upload処理完了",
-                text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"            
-              });
+    function getSelectedParts(){
+        var vals = $.map($("[name='part']:checked"),function(v,idx){
+            return v.value;
         });
-        $("exec").removeAttr("disabled");
-        },
-        function(data){　//reject
+        return vals;	
+    }
+    
+    function updateName(){
+        var fname = $("[name='title']:checked").val() || "";
+        var extension = $("#file").val().split(".")[1];
+        var memo = $("#memo").val();
+        var buildName = fname;
+        if(memo){
+            buildName += "_" + memo;
+        }
+        buildName += "(" + getSelectedParts().join(",") + ")";
+        extension = extension || "";
+        $("#fname").val(buildName + "." + extension);
+    }
+	
+    function executeUpload(){
+        var ret = confirm("uploadします");
+            if(!ret){
+            return;
+        }
+        $("exec").attr("disabled","disabled");
+        console.log(selectedFile);
+        
+        var upfname = $("#fname").val();
+        var folderid = folderMap[$("[name='title']:checked").val()];
+        var prms = helper.gapi.functions.uploadFile(upfname,selectedFile,folderid);
+
+        //upload実行          
+        $.when(prms).then(
+            function(data){
+                var parts = getSelectedParts();
+                var downloadURL = data["webContentLink"];
+                $.pnotify({
+                    title: "upload完了",
+                    text: upfname + "がuploadされました(<" + "a href='" + downloadURL + "'>download</>"
+                  });
+                var json = helper.gapi.functions.addScheduler(constants.gapi.calerndar_id)
+                  .now()
+                  .addR("summary",upfname)
+                  .addR("description","file:" + downloadURL + "<br/>" + getSelectedParts())
+                  .getJson();
+                
+                gapi.client.calendar.events.insert(json).execute(function(e){
+                    console.log(e);
+                    if(e.error){
+                      $.pnotify({
+                          title: "カレンダー登録に失敗",
+                          text: "code:" + e.error.code + "\r\nmessage:" +e.error.message,
+                          type:"error"
+                      });
+                      return ;
+                    }    
+                    $.pnotify({
+                        title: "upload処理完了",
+                        text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"            
+                      });
+                });
+            $("exec").removeAttr("disabled");
+          },
+          //reject function
+          function(data){
+            console.log(data);
             $.pnotify({
                 title: "upload error",
                 text: "code:" + data.error.code + "\r\nmessage:" +data.error.message,
                 type:"error"
             });
-        });
-    }
+          });
+      }
 	
     function require_tools_finish(){
         $.pnotify.defaults.styling = "jqueryui";
@@ -122,42 +143,60 @@
             text: "ロード完了後にuploadボタンが有効化され使用できるようになります。"
         });
         if (!('console' in window)) {
-    
-             window.console = {};
-             window.console.log = function(str){
-               return str;
-             };
+                window.console = {};
+                window.console.log = function(str){
+                return str;
+            };
         }
         load_APIs();
         
         $(":input").focus(function(){
-                $(this).css("background","#DFEEFF");
+            $(this).css("background","#DFEEFF");
         }).blur(function(){
-                $(this).css("background","");
+            $(this).css("background","");
+        });
+        //クリック時の画面情報最新化
+        $(":input").on("click",function(){
+            updateName();
+            $("#comp").replaceWith($("#compListTmpl").tmpl(compMaps));
+//            $("#compListTmpl").tmpl(compMaps).appendTo($("#comp"));
         });
 
-        $(":input").on("click",function(){
-                updateName();			
-        });
-    
         if(!('File' in window)){
-                    $.pnotify({
+            $.pnotify({
                 title: "ブラウザは、HTML5をサポートしていません",
                 text: "この画面を使用するには、HTML5をサポートしたブラウザが必要です",
                 type : "error"
-              });
+            });
         }
     
-    $("#exec").on("click",executeUpload);
-    $("#file").on("change",function(evt){
+        $("#exec").on("click",executeUpload);
+        $("#file").on("change",function(evt){
             updateName();
             selectedFile = evt.target.files[0]; // FileList object
-    });
-  }
+        });
+        
+    }
 </script>
 <!--
 -->
     <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
+    <script id="fileListTmpl" type="text/x-jquery-tmpl">
+        <li>
+            <a href="${webContentLink}">${originalFilename}</a>
+        </li>
+    </script>
+    
+    <script id="compListTmpl" type="text/x-jquery-tmpl">
+        <td><img src="images/${status}.png" class="comp_song_img"/>{{tmpl "#compUrlLink"}}</td>
+    </script>
+
+    <script id="compUrlLink" type="text/x-jquery-tmpl">
+        {{if url}}<a href="${url}">{{/if}}
+        ${title}
+        {{if url}}</a>{{/if}}
+    </script>
+
     
 <body>
 	<div id="container">
@@ -175,33 +214,46 @@
 			<div id="main">
 				<div id="main_in">
 					<form name="up_form" target="tools.html">
-						<span class="t">音源Upload</span>				
-						<hr/>
-						<p>uploadされたファイルはGoogle Driveにuploadされ、カレンダー登録されます。</p>
-						<br/>
-						<FIELDSET style="padding:1px;width:20%;">
-						<legend>曲名選択</legend>
-						<div><input type="radio" name="title" value="その向こう"/><label>その向こう</label></div>
-						<div><input type="radio" name="title" value="川落ち"/><label>川落ち</label></div>
-						<div><input type="radio" name="title" value="正しい世界"/><label>正しい世界</label></div>
-						<div><input type="radio" name="title" value="自分記念日"/><label>自分記念日</label></div>
-						<div><input type="radio" name="title" value="NOW!"/><label>NOW!</label></div>
-						<div><input type="radio" name="title" value="春恋"/><label>春恋</label></div>
-						</FIELDSET>
-						<br/>
-						<FIELDSET style="padding:1px;width:40%;">
-						<legend>パート選択<small>(音源に含まれるパート）</small></legend>
-						&nbsp;<input type="checkbox" name="part" id="part_g1" value="G1"/>G1
-						&nbsp;<input type="checkbox" name="part" id="part_g2" value="G2"/>G2
-						&nbsp;<input type="checkbox" name="part" id="part_bass" value="Bass"/>Bass
-						&nbsp;<input type="checkbox" name="part" id="part_dr" value="Dr"/>Dr
-						&nbsp;<input type="checkbox" name="part" id="part_key" value="Key"/>Key
-						&nbsp;<input type="checkbox" name="part" id="part_vo" value="Vo"/>Vo
-						</FIELDSET>
-						<br/>
-						音源ファイル選択　　<input type="file" id="file"> ==>
-						登録されるファイル名<input type="text" id="fname" name="fname" value="" style="width:150px" readonly/>
-						<br/><input class="ui-button" type="button" id="exec" name="exec" value="upload" disabled/>
+    <span class="t">音源Upload</span>				
+    <hr/>
+    <p>uploadされたファイルはGoogle Driveにuploadされ、カレンダー登録されます。</p>
+    <br/>
+    <FIELDSET style="padding:1px;width:20%;">
+    <legend>曲名選択</legend>
+    <div><input type="radio" name="title" value="その向こう"/><label>その向こう</label></div>
+    <div><input type="radio" name="title" value="川落ち"/><label>川落ち</label></div>
+    <div><input type="radio" name="title" value="正しい世界"/><label>正しい世界</label></div>
+    <div><input type="radio" name="title" value="自分記念日"/><label>自分記念日</label></div>
+    <div><input type="radio" name="title" value="NOW!"/><label>NOW!</label></div>
+    <div><input type="radio" name="title" value="春恋"/><label>春恋</label></div>
+    </FIELDSET>
+    <br/>
+    <FIELDSET style="padding:1px;width:400px;">
+    <legend>パート選択<small>(音源に含まれるパート）</small></legend>
+    &nbsp;<input type="checkbox" name="part" id="part_g1" value="G1"/>G1
+    &nbsp;<input type="checkbox" name="part" id="part_g2" value="G2"/>G2
+    &nbsp;<input type="checkbox" name="part" id="part_bass" value="Bass"/>Bass
+    &nbsp;<input type="checkbox" name="part" id="part_dr" value="Dr"/>Dr
+    &nbsp;<input type="checkbox" name="part" id="part_key" value="Key"/>Key
+    &nbsp;<input type="checkbox" name="part" id="part_vo" value="Vo"/>Vo
+    &nbsp;Memo<input type="text" id="memo" name="memo" value="" style="width:80px"/>
+    </FIELDSET>
+    <br/>
+    音源ファイル選択　　<input type="file" id="file"> ==>
+    登録されるファイル名<input type="text" id="fname" name="fname" value="" style="width:180px" readonly/>
+    <br/><input class="ui-button" type="button" id="exec" name="exec" value="upload" disabled/>
+    <br/><br/><br/>
+    <span class="t">進捗状況</span><hr/>
+        <br/>
+        <table class="song_comp_table"><thead>
+            <tr class="song_comp_t"><th >G1</th><th>G2</th><th>Bass</th><th>Dr</th><th>Key</th><th>Vo</th></tr>
+            </thead>
+            <tbody>
+            <tr id="comp"></tr>
+            </tbody>
+        </table>
+
+    
 					</form>
 				</div>
 			</div>

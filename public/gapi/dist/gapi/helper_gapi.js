@@ -63,7 +63,8 @@ helper.gapi.newMultipartHelper = function(boundary){
 }
 
 //short cut functions
-helper.gapi.functions.authorize = function(scopeNames,force){
+helper.gapi.functions.authorize = function(scopeNames,force,immed){
+    immed = immed || true;
     scopeNames = scopeNames || ['drive'];   //test code default drive
     var scopesAry = $.map(scopeNames,function(v,idx){
         return "https://www.googleapis.com/auth/" + v;
@@ -73,11 +74,11 @@ helper.gapi.functions.authorize = function(scopeNames,force){
     console.log("auth request:" + scopes);
     var df = $.Deferred();
     gapi.auth.authorize(
-    {client_id: constants.gapi.client_id, scope: scopes, immediate: true}, function(res){
+    {client_id: constants.gapi.client_id, scope: scopes, immediate: immed}, function(res){
         if((!gapi.auth || !gapi.auth.getToken())){
             console.log("!!!auth fail!!!");
             if(!force){
-                df.reject("gapi.auth not exists:" + scopes);
+                df.reject(res);
             }else{
                 console.log("auth fail[force mode]");
                 df.resolve("auth fail[force mode]");
@@ -119,7 +120,6 @@ helper.gapi.functions.listFilesBy = function (gcond){
     return df.promise();
 }
 
-//filder not use
 helper.gapi.functions.uploadFile = function (fileName,uploadFile,folderid){
     var df = new $.Deferred();
     var reader = new FileReader();
@@ -215,3 +215,30 @@ helper.gapi.functions.addScheduler = function (calendarId){
     }
     return module;
 };
+
+helper.gapi.functions.createFileExplorer = function (){
+    var module = {
+        "filderid":"",
+        fieldValues:[],
+        list : function(folderid){
+            var client = gapi.client.drive.files.list({
+                q:"'" + folderid +"' in parents",
+                fields:"items("+this.fieldValues + ")"
+            });
+            
+            client.execute(function(res){
+                 console.log(res);
+                var parts = $.map(res.items,function(v){
+                    console.log(v.title)
+                    return (v.title.match(/\(([^\)]+)\)/) || [])[1] || null
+                });
+                console.log(parts);
+            });
+        },
+        addFields: function(v){
+            this.fieldValues = v.join(",");
+            return this;
+        }
+    };
+    return module;
+}
