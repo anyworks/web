@@ -218,22 +218,27 @@ helper.gapi.functions.addScheduler = function (calendarId){
 
 helper.gapi.functions.createFileExplorer = function (){
     var module = {
-        "filderid":"",
         fieldValues:[],
         list : function(folderid){
+            var me = this;
+            var df = $.Deferred();
+            me.songs={"folderid":folderid};
             var client = gapi.client.drive.files.list({
-                q:"'" + folderid +"' in parents",
-                fields:"items("+this.fieldValues + ")"
+                q:"'" + folderid +"' in parents and trashed = false",
+                fields:"items("+me.fieldValues + ")"
             });
-            
             client.execute(function(res){
-                 console.log(res);
-                var parts = $.map(res.items,function(v){
-                    console.log(v.title)
-                    return (v.title.match(/\(([^\)]+)\)/) || [])[1] || null
-                });
-                console.log(parts);
+                if(res && res.items){
+                    $.each(res.items,function(idx,v){
+                        var part = (v.title.match(/\(([^\)]+)\)/) || [])[1] || null;
+                        me.songs[part] = me.songs[part] || {};
+                        me.songs[part].fields = me.songs[part].fields || [];
+                        me.songs[part].fields.push(v);
+                    });
+                }
+                df.resolve(me.songs)
             });
+            return df.promise();
         },
         addFields: function(v){
             this.fieldValues = v.join(",");

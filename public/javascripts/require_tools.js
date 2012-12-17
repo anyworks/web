@@ -7,6 +7,7 @@ require([
 function() {
     require([
         "javascripts/libs/jquery-ui-1.9.2.custom/js/jquery-ui-1.9.2.custom.min.js"
+        ,"libs/jquery.fancybox.pack"
         ,'gapi/dist/gapi/helper_gapi.js'
     ],function(){
         require([

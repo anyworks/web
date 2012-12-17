@@ -8,11 +8,13 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
+<link href="css/jquery.fancybox.css" rel="stylesheet" type="text/css" />
 
 <link href="javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
 <link href="javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
 <!-- Include this file if you are using Pines Icons. -->
 <link href="javascripts/libs/pnotify-1.2.0/use for pines style icons/jquery.pnotify.default.icons.css" media="all" rel="stylesheet" type="text/css" />
+
 </head>
 <script type="text/javascript">
 	var selectedFile="";
@@ -25,15 +27,6 @@
       "NOW!":"0B3pnnGKgIx1uZXFRX0NqNFhqQ2s",
       "春恋":"0B3pnnGKgIx1ua1Vwanc3U2lpdzg"
     }
-        
-    var compMaps=[
-        {part:"G1",status:"done",url:"",title:"none"},
-        {part:"G2",status:"done",url:"index.html",title:"index"},
-        {part:"Bass",status:"done",url:"",title:"none"},
-        {part:"Dr",status:"done",url:"",title:"none"},
-        {part:"Key",status:"done",url:"",title:"none"},
-        {part:"Vo",status:"close",url:"",title:"none"}
-    ];
   
     function load_APIs(){
         helper.gapi.functions.authorize(["drive.file","calendar"],false).then(
@@ -43,22 +36,19 @@
                 helper.gapi.functions.loadBy("calendar","v3")
             ];
             
-            $.when.apply(null,apis).then(function(data){
-                //事前条件： authorize が完了    
-                $("#exec").removeAttr("disabled");
-                    var hpexp = helper.gapi.functions.createFileExplorer();
-                    hpexp.addFields(["title","webContentLink"]).list("0B3pnnGKgIx1uNVYteXZIRGZtcFE");
-                })
-            },
-            function(e){
-                  $.pnotify({
-                      title: "ドキュメントUploadが許可されていません。",
-                      text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
-                      type:"error"
-                  });
-                  return ;
-            }
-        );
+            $.when.apply(null,apis).then(
+                function(data){
+                    load_APIs_finish();
+                },function(e){
+                    $.pnotify({
+                        title: "ドキュメントUploadが許可されていません。",
+                        text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
+                        type:"error"
+                    });
+                    return ;
+                }
+            );
+        });
     }
 	
     function getSelectedParts(){
@@ -105,7 +95,7 @@
                 var json = helper.gapi.functions.addScheduler(constants.gapi.calerndar_id)
                   .now()
                   .addR("summary",upfname)
-                  .addR("description","file:" + downloadURL + "<br/>" + getSelectedParts())
+                  .addR("description","URL:" + downloadURL)
                   .getJson();
                 
                 gapi.client.calendar.events.insert(json).execute(function(e){
@@ -158,8 +148,6 @@
         //クリック時の画面情報最新化
         $(":input").on("click",function(){
             updateName();
-            $("#comp").replaceWith($("#compListTmpl").tmpl(compMaps));
-//            $("#compListTmpl").tmpl(compMaps).appendTo($("#comp"));
         });
 
         if(!('File' in window)){
@@ -175,28 +163,65 @@
             updateName();
             selectedFile = evt.target.files[0]; // FileList object
         });
-        
+
+    }
+    
+    <!-- for list files -->
+    var compParts = ["G1","G2","Bass","Dr","Key","Vo"];
+  
+    function load_list(){
+        var folderid_list = $.map(folderMap,function(folderid,k){
+            var hpexp = helper.gapi.functions.createFileExplorer().addFields(["title","webContentLink"]);
+             return hpexp.list(folderid).promise();
+        });
+        $.when.apply(null,folderid_list).done(
+            function(){
+                $.each(arguments,function(idx,success_dt){
+                    var parentElem = "#" + success_dt.folderid;
+                    
+                    $.each(compParts,function(idx,compp){
+                        var tgt = $(parentElem + "  ." + compp);
+                        if(success_dt[compp]){
+                            tgt.empty();
+                            $("#compListTmpl").tmpl(success_dt[compp]).appendTo(tgt);
+                        }else{
+                            tgt.empty();
+                            $("#closeListTmpl").tmpl({}).appendTo(tgt);
+                        }
+                    });
+
+                });
+                
+            $("#list_toggle").fancybox({
+                type : "inline",
+                content : $("#list_files").html(),
+                height : 400,
+                width : 600,
+                'hideOnContentClick': true  
+            });  
+
+            }
+        );
+    }
+    
+    function load_APIs_finish(){
+        //事前条件： authorize が完了    
+        $("#exec").removeAttr("disabled");
+        load_list();
     }
 </script>
-<!--
--->
     <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
-    <script id="fileListTmpl" type="text/x-jquery-tmpl">
-        <li>
-            <a href="${webContentLink}">${originalFilename}</a>
-        </li>
+<!-- jQuery Template -->
+    <script id="closeListTmpl" type="text/x-jquery-tmpl">
+        <img src="images/close.png" class="comp_song_img"/>
     </script>
-    
     <script id="compListTmpl" type="text/x-jquery-tmpl">
-        <td><img src="images/${status}.png" class="comp_song_img"/>{{tmpl "#compUrlLink"}}</td>
+        {{tmpl "#compUrlLinks"}}
     </script>
-
-    <script id="compUrlLink" type="text/x-jquery-tmpl">
-        {{if url}}<a href="${url}">{{/if}}
-        ${title}
-        {{if url}}</a>{{/if}}
+    <script id="compUrlLinks" type="text/x-jquery-tmpl">
+        {{each fields}}<a href="${$value.webContentLink}"><img src="images/done.png" class="comp_song_img" title="${$value.title}"/></a>&nbsp;{{/each}}
     </script>
-
+<!-- jQuery Template -->
     
 <body>
 	<div id="container">
@@ -217,7 +242,23 @@
     <span class="t">音源Upload</span>				
     <hr/>
     <p>uploadされたファイルはGoogle Driveにuploadされ、カレンダー登録されます。</p>
-    <br/>
+    <br/><div id="list_toggle">進捗状況確認</div>
+        <div id="list_files" style="display: none">
+        <span class="t">進捗状況</span><hr/>
+        <br/>
+        <table class="song_comp_table"><thead>
+            <tr><th class="title">タイトル</th><th >G1</th><th>G2</th><th>Bass</th><th>Dr</th><th>Key</th><th>Vo</th></tr>
+            </thead>
+            <tbody>
+            <tr id="0B3pnnGKgIx1uWFYtT19vTy1KbDQ"><td>その向こう</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uc05FdGo5Tlg2bXc"><td>川落ち</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uNVYteXZIRGZtcFE"><td>正しい世界</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uVG5mRVpnVEdZWjA"><td>自分記念日</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uZXFRX0NqNFhqQ2s"><td>NOW!</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1ua1Vwanc3U2lpdzg"><td>春恋</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            </tbody>
+        </table>
+    </div>
     <FIELDSET style="padding:1px;width:20%;">
     <legend>曲名選択</legend>
     <div><input type="radio" name="title" value="その向こう"/><label>その向こう</label></div>
@@ -230,30 +271,19 @@
     <br/>
     <FIELDSET style="padding:1px;width:400px;">
     <legend>パート選択<small>(音源に含まれるパート）</small></legend>
-    &nbsp;<input type="checkbox" name="part" id="part_g1" value="G1"/>G1
-    &nbsp;<input type="checkbox" name="part" id="part_g2" value="G2"/>G2
-    &nbsp;<input type="checkbox" name="part" id="part_bass" value="Bass"/>Bass
-    &nbsp;<input type="checkbox" name="part" id="part_dr" value="Dr"/>Dr
-    &nbsp;<input type="checkbox" name="part" id="part_key" value="Key"/>Key
-    &nbsp;<input type="checkbox" name="part" id="part_vo" value="Vo"/>Vo
+    &nbsp;<input type="radio" name="part" id="part_g1" value="G1"/>G1
+    &nbsp;<input type="radio" name="part" id="part_g2" value="G2"/>G2
+    &nbsp;<input type="radio" name="part" id="part_bass" value="Bass"/>Bass
+    &nbsp;<input type="radio" name="part" id="part_dr" value="Dr"/>Dr
+    &nbsp;<input type="radio" name="part" id="part_key" value="Key"/>Key
+    &nbsp;<input type="radio" name="part" id="part_vo" value="Vo"/>Vo
     &nbsp;Memo<input type="text" id="memo" name="memo" value="" style="width:80px"/>
     </FIELDSET>
     <br/>
     音源ファイル選択　　<input type="file" id="file"> ==>
     登録されるファイル名<input type="text" id="fname" name="fname" value="" style="width:180px" readonly/>
     <br/><input class="ui-button" type="button" id="exec" name="exec" value="upload" disabled/>
-    <br/><br/><br/>
-    <span class="t">進捗状況</span><hr/>
-        <br/>
-        <table class="song_comp_table"><thead>
-            <tr class="song_comp_t"><th >G1</th><th>G2</th><th>Bass</th><th>Dr</th><th>Key</th><th>Vo</th></tr>
-            </thead>
-            <tbody>
-            <tr id="comp"></tr>
-            </tbody>
-        </table>
-
-    
+    <div id="list"></div>
 					</form>
 				</div>
 			</div>

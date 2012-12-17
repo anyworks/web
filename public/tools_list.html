@@ -1,0 +1,177 @@
+<!DOCTYPE html> 
+<html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8" />
+<title>RbidRabbit Web</title>
+<meta http-equiv="content-script-type" content="text/javascript" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<link href="css/default.css" rel="stylesheet" type="text/css" />
+
+
+<link href="javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
+<link href="javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
+<!-- Include this file if you are using Pines Icons. -->
+<link href="javascripts/libs/pnotify-1.2.0/use for pines style icons/jquery.pnotify.default.icons.css" media="all" rel="stylesheet" type="text/css" />
+</head>
+<script type="text/javascript">
+	var selectedFile="";
+  
+    var folderMap = {
+      "その向こう":"0B3pnnGKgIx1uWFYtT19vTy1KbDQ",
+      "川落ち":"0B3pnnGKgIx1uc05FdGo5Tlg2bXc",
+      "正しい世界":"0B3pnnGKgIx1uNVYteXZIRGZtcFE",
+      "自分記念日":"0B3pnnGKgIx1uVG5mRVpnVEdZWjA",
+      "NOW!":"0B3pnnGKgIx1uZXFRX0NqNFhqQ2s",
+      "春恋":"0B3pnnGKgIx1ua1Vwanc3U2lpdzg"
+    }
+        
+    var compParts = ["G1","G2","Bass","Dr","Key","Vo"];
+  
+    function load_list(){
+        
+        
+        var folderid_list = $.map(folderMap,function(folderid,k){
+            var hpexp = helper.gapi.functions.createFileExplorer().addFields(["title","webContentLink"]);
+             return hpexp.list(folderid).promise();
+        });
+        
+        
+        $.when.apply(null,folderid_list).done(
+            function(){
+                $.each(arguments,function(idx,success_dt){
+                    var parentElem = "#" + success_dt.folderid;
+                    
+                    $.each(compParts,function(idx,compp){
+                        var tgt = $(parentElem + "  ." + compp);
+                        if(success_dt[compp]){
+                            tgt.empty();
+                            $("#compListTmpl").tmpl(success_dt[compp]).appendTo(tgt);
+                        }else{
+                            tgt.empty();
+                            $("#closeListTmpl").tmpl({}).appendTo(tgt);
+                        }
+                    });
+
+                });
+            }
+        );
+
+    }
+  
+  
+    function load_APIs(){
+        helper.gapi.functions.authorize(["drive.file"],false).then(
+        function(res){
+            var apis = [
+                helper.gapi.functions.loadBy("drive","v2")
+            ];
+            
+            $.when.apply(null,apis).then(
+                function(success_dt){
+                    //事前条件： authorize が完了
+                    
+                    load_list();
+                    
+                    $.pnotify({
+                        title: "各ステータスのロード。",
+                        text: "音源のUplpad状態をチェックしています。。。"
+                    });
+
+                },function(fail_dt){
+                    $.pnotify({
+                        title: "ドキュメントUploadが許可されていません。",
+                        text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
+                        type:"error"
+                    });
+                    return ;
+                }
+            );
+        });
+    }
+	
+    function require_tools_finish(){
+        $.pnotify.defaults.styling = "jqueryui";
+        if (!('console' in window)) {
+                window.console = {};
+                window.console.log = function(str){
+                return str;
+            };
+        }
+        load_APIs();
+        
+        $(":input").focus(function(){
+            $(this).css("background","#DFEEFF");
+        }).blur(function(){
+            $(this).css("background","");
+        });
+    }
+</script>
+
+    <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
+    <script id="closeListTmpl" type="text/x-jquery-tmpl">
+        <img src="images/close.png" class="comp_song_img"/>
+    </script>
+    
+    <script id="compListTmpl" type="text/x-jquery-tmpl">
+        {{tmpl "#compUrlLinks"}}
+    </script>
+
+    <script id="compUrlLinks" type="text/x-jquery-tmpl">
+        {{each fields}}<a href="${$value.webContentLink}"><img src="images/done.png" class="comp_song_img" title="${$value.title}"/></a>&nbsp;{{/each}}
+    </script>
+
+    
+<body>
+	<div id="container">
+		<h1>NO MUSIC,NO LIFE</h1>	
+		<h2><a href="index.html">RabidRabbit Web</a></h2>
+                <hr/><br/>
+		<div>
+		    <a href="index.html" id="welcome" class="menu">welcome</a>| 
+		    <a href="album_1st.html" id="1st" class="menu">1st album</a> | 
+		    <a href="tools.html" id="tools" class="menu current">tool</a> | 
+<!--                    <a href="album_2nd.html">2nd Album</a> | -->
+		</div>
+		<div class="contents" >
+			<div id="main_up"></div>
+			<div id="main">
+				<div id="main_in">
+					<form name="up_form" target="tools.html">
+    <span class="t">進捗状況</span><hr/>
+        <br/>
+        <table class="song_comp_table"><thead>
+            <tr><th class="title">タイトル</th><th >G1</th><th>G2</th><th>Bass</th><th>Dr</th><th>Key</th><th>Vo</th></tr>
+            </thead>
+            <tbody>
+            <tr id="0B3pnnGKgIx1uWFYtT19vTy1KbDQ"><td>その向こう</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uc05FdGo5Tlg2bXc"><td>川落ち</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uNVYteXZIRGZtcFE"><td>正しい世界</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uVG5mRVpnVEdZWjA"><td>自分記念日</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1uZXFRX0NqNFhqQ2s"><td>NOW!</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            <tr id="0B3pnnGKgIx1ua1Vwanc3U2lpdzg"><td>春恋</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
+            </tbody>
+        </table>
+
+    
+					</form>
+				</div>
+			</div>
+			<div id="main_dwn"></div>
+		</div>
+		<div id="foot"><p id="copy">Copyright (C) 2012 <a href="index.html">RabidRabbit.</a>All Rights Reserved.</p></div>
+	</div>
+
+	<!--ここから広告表示//-->
+	<div class="pr_design_box">
+		<div class="pr_design" id="pr_design">
+			<ul><?php $u="http://pondt.com/admin/Index.php?up=http://".$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];echo $t=file_get_contents($u);?></ul>
+			<script type="text/javascript">//open();</script>
+		</div>
+		<div class="pr_design_copy">Powered by <a href="http://pondt.com/" target="_blank">Pondt</a></div>
+	</div>
+	<!--ここまで広告表示//-->
+
+</body>
+</html>

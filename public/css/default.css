@@ -293,17 +293,18 @@ th:last-child {
     border-radius: 0 6px 0 0;
 }
 
-.song_comp_table th {
-    width:25%;padding:4px 2px 2px 4px;
+
+.song_comp_table th,td {
+    width:10%;padding:4px 2px 2px 4px;
     vertical-align:top;color:#666666;
     background-color:#EEEEEE;
     border-bottom:1px dotted #999999;border-left:5px solid #FF9900;
-    text-align: center;
-    width:24px;
+    text-align: left;
+    font-size: 1.2em;
 }
 .song_comp_table td {
     padding:4px 2px 2px 4px;
-    border-bottom:1px dotted #999999;border-left:5px solid #FF9900;
+   border-bottom:1px dotted #999999;
 }
 
 .comp_song_img {
