@@ -8,6 +8,8 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
+<link href="css/jqsimplemenu.css" rel="stylesheet" type="text/css" />
+
 <script type="text/javascript">
     function require_check_client_finish(){
         if (Modernizr.touch) {
@@ -20,20 +22,24 @@
 </script>
 <script data-main="javascripts/require_chk_client"  src="javascripts/libs/require.js"></script>    
 </head>
-<body>
+<body style="display: none">
 
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>
 		<h2><a href="index.html">RabidRabbit Web</a></h2>
 		<hr/>
-		<br/>
-		<div>
-		    <a href="index.html" id="welcome" class="menu">welcome</a>| 
-		    <a href="album_1st.html" id="1st" class="menu current">1st album</a> | 
-		    <a href="tools.html" id="tools" class="menu">tool</a> | 
+    <div>
+		<ul class="jq-menu">
+        <li><a href="index.html" id="welcome" class="menu current">welcome</a></li>
+		    <li><a href="album_1st.html" id="1st" class="menu">1st album</a> </li>
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->
-		</div>
-	
+        <li><a hef="#">tools</a><ul>
+            <li><a href="tools.html" id="tools" class="menu">音源Upload</a> </li>
+            <li><a href="tools_list.html" id="tools" class="menu">Upload状況</a> </li>
+        </ul>
+            
+		</ul>
+	</div>
 		<div class="contents">
 			<div id="main_up"></div>
 			<div id="main">

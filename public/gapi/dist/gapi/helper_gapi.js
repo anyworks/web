@@ -64,21 +64,21 @@ helper.gapi.newMultipartHelper = function(boundary){
 
 //short cut functions
 helper.gapi.functions.authorize = function(scopeNames,force,immed){
+    force = force || false;
     immed = immed || true;
     scopeNames = scopeNames || ['drive'];   //test code default drive
     var scopesAry = $.map(scopeNames,function(v,idx){
         return "https://www.googleapis.com/auth/" + v;
     });
     var scopes = scopesAry.join(" ");
-    
-    console.log("auth request:" + scopes);
     var df = $.Deferred();
     gapi.auth.authorize(
     {client_id: constants.gapi.client_id, scope: scopes, immediate: immed}, function(res){
         if((!gapi.auth || !gapi.auth.getToken())){
-            console.log("!!!auth fail!!!");
+            console.log(gapi.auth);
             if(!force){
-                df.reject(res);
+                console.log("rejected:" + res);
+                df.reject("rejected");
             }else{
                 console.log("auth fail[force mode]");
                 df.resolve("auth fail[force mode]");

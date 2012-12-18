@@ -8,7 +8,7 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
-
+<link href="css/jqsimplemenu.css" rel="stylesheet" type="text/css" />
 
 <link href="javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
 <link href="javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
@@ -30,14 +30,10 @@
     var compParts = ["G1","G2","Bass","Dr","Key","Vo"];
   
     function load_list(){
-        
-        
         var folderid_list = $.map(folderMap,function(folderid,k){
             var hpexp = helper.gapi.functions.createFileExplorer().addFields(["title","webContentLink"]);
-             return hpexp.list(folderid).promise();
+             return hpexp.list(folderid);
         });
-        
-        
         $.when.apply(null,folderid_list).done(
             function(){
                 $.each(arguments,function(idx,success_dt){
@@ -55,6 +51,12 @@
                     });
 
                 });
+                $.pnotify({
+                    title: "完了"
+                    ,text: "チェックが完了しました"
+                    ,type: "info"
+                });
+
             }
         );
 
@@ -92,15 +94,7 @@
     }
 	
     function require_tools_finish(){
-        $.pnotify.defaults.styling = "jqueryui";
-        if (!('console' in window)) {
-                window.console = {};
-                window.console.log = function(str){
-                return str;
-            };
-        }
         load_APIs();
-        
         $(":input").focus(function(){
             $(this).css("background","#DFEEFF");
         }).blur(function(){
@@ -111,7 +105,7 @@
 
     <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
     <script id="closeListTmpl" type="text/x-jquery-tmpl">
-        <img src="images/close.png" class="comp_song_img"/>
+        <!--<img src="images/close.png" class="comp_song_img"/>-->&nbsp;
     </script>
     
     <script id="compListTmpl" type="text/x-jquery-tmpl">
@@ -123,24 +117,32 @@
     </script>
 
     
-<body>
+<body style="display:none">
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>	
 		<h2><a href="index.html">RabidRabbit Web</a></h2>
                 <hr/><br/>
-		<div>
-		    <a href="index.html" id="welcome" class="menu">welcome</a>| 
-		    <a href="album_1st.html" id="1st" class="menu">1st album</a> | 
-		    <a href="tools.html" id="tools" class="menu current">tool</a> | 
+		<ul class="jq-menu">
+        <li><a href="index.html" id="welcome" class="menu current">welcome</a></li>
+		    <li><a href="album_1st.html" id="1st" class="menu">1st album</a> </li>
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->
-		</div>
+        <li><a hef="#">tools</a><ul>
+            <li><a href="tools.html" id="tools" class="menu">音源Upload</a> </li>
+            <li><a href="tools_list.html" id="tools" class="menu">Upload状況</a> </li>
+        </ul>
+            
+		</ul>
 		<div class="contents" >
 			<div id="main_up"></div>
 			<div id="main">
 				<div id="main_in">
 					<form name="up_form" target="tools.html">
+						
+<div id="uc-container" class="uc-container">
+    <div class="uc-initial-content">
     <span class="t">進捗状況</span><hr/>
-        <br/>
+    </div>
+    <div class="uc-final-content">
         <table class="song_comp_table"><thead>
             <tr><th class="title">タイトル</th><th >G1</th><th>G2</th><th>Bass</th><th>Dr</th><th>Key</th><th>Vo</th></tr>
             </thead>
@@ -153,8 +155,8 @@
             <tr id="0B3pnnGKgIx1ua1Vwanc3U2lpdzg"><td>春恋</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
             </tbody>
         </table>
-
-    
+    </div>
+</div>
 					</form>
 				</div>
 			</div>

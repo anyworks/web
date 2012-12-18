@@ -8,7 +8,7 @@ vertical-align:middle;
 
 body{
 	color:#000000;/*通常のテキストカラー*/
-	}
+}
 a{
 	color:#0099FF;/*通常のリンクテキストカラー*/
 	}
@@ -126,7 +126,8 @@ h2 a:hover{
 	}
 #main_up{
 	background:url(../img/bg_main_up.jpg);
-	height:40px;
+	height:20px;
+  margin-top: 17px;
 	}
 #main{
 	background:url(../img/bg_main.jpg) repeat-y;
@@ -276,7 +277,7 @@ h2 a:hover{
 
 .song_comp_table{
     width:100%;margin:0px 0px 10px 0px;padding:0px;
-    *border-collapse: collapse; /* IE7 and lower */
+    border-collapse: collapse; /* IE7 and lower */
     border-top:1px dotted #999999;
     border-spacing: 0;
 }
@@ -294,7 +295,7 @@ th:last-child {
 }
 
 
-.song_comp_table th,td {
+.song_comp_table th,.song_comp_table td {
     width:10%;padding:4px 2px 2px 4px;
     vertical-align:top;color:#666666;
     background-color:#EEEEEE;

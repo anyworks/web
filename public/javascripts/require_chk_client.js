@@ -4,11 +4,13 @@ require([
 ],
 function() {
     var requires = [];
-//    requires.push("javascripts/libs/mobile/jquery.jcarousel.min.js");
+    requires.push("javascripts/libs/jqsimplemenu.js");
 //    if(Modernizr.touch){
         //requires.push("javascripts/libs/mobile/jquery.mobile-1.2.0.min.js");
 //    }
     require(requires,function(){
+        $(document.body).css("display","");
+        $('.jq-menu').jqsimplemenu();
         require_check_client_finish();
     });
 }

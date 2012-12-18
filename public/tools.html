@@ -8,7 +8,7 @@
 <meta http-equiv="content-style-type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
 <link href="css/default.css" rel="stylesheet" type="text/css" />
-<link href="css/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+<link href="css/jqsimplemenu.css" rel="stylesheet" type="text/css" />
 
 <link href="javascripts/libs/jquery-ui-1.9.2.custom/css/ui-darkness/jquery-ui-1.9.2.custom.min.css" rel="stylesheet" type="text/css" />
 <link href="javascripts/libs/pnotify-1.2.0/jquery.pnotify.default.css" media="all" rel="stylesheet" type="text/css" />
@@ -45,10 +45,16 @@
                         text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
                         type:"error"
                     });
-                    return ;
                 }
             );
-        });
+        },function(e){
+            $.pnotify({
+                title: "認可に失敗",
+                text: "drive　calendar",
+                type:"error"
+            });
+        }
+        );
     }
 	
     function getSelectedParts(){
@@ -76,9 +82,10 @@
             if(!ret){
             return;
         }
-        $("exec").attr("disabled","disabled");
+        $("#exec").attr("disabled","disabled");
+        $("#exec").attr("value","uploading...");
         console.log(selectedFile);
-        
+        return ;
         var upfname = $("#fname").val();
         var folderid = folderMap[$("[name='title']:checked").val()];
         var prms = helper.gapi.functions.uploadFile(upfname,selectedFile,folderid);
@@ -113,8 +120,9 @@
                         text: "カレンダー登録し、処理が正常に終了しました<br/><a href='https://www.google.com/calendar/embed?src=kn5p9pmpek1l0rhjbj2vp9q0rc%40group.calendar.google.com&ctz=Asia/Tokyo'>calendar</a>"            
                       });
                 });
-            $("exec").removeAttr("disabled");
-          },
+                $("#exec").attr("disabled","");
+                $("#exec").attr("value","upload");
+        },
           //reject function
           function(data){
             console.log(data);
@@ -126,18 +134,11 @@
           });
       }
 	
-    function require_tools_finish(){
-        $.pnotify.defaults.styling = "jqueryui";
+    function require_tools_finish(){        
         $.pnotify({
             title: "ライブラリをロードしています....",
             text: "ロード完了後にuploadボタンが有効化され使用できるようになります。"
         });
-        if (!('console' in window)) {
-                window.console = {};
-                window.console.log = function(str){
-                return str;
-            };
-        }
         load_APIs();
         
         $(":input").focus(function(){
@@ -165,75 +166,37 @@
         });
 
     }
-    
-    <!-- for list files -->
-    var compParts = ["G1","G2","Bass","Dr","Key","Vo"];
-  
-    function load_list(){
-        var folderid_list = $.map(folderMap,function(folderid,k){
-            var hpexp = helper.gapi.functions.createFileExplorer().addFields(["title","webContentLink"]);
-             return hpexp.list(folderid).promise();
-        });
-        $.when.apply(null,folderid_list).done(
-            function(){
-                $.each(arguments,function(idx,success_dt){
-                    var parentElem = "#" + success_dt.folderid;
-                    
-                    $.each(compParts,function(idx,compp){
-                        var tgt = $(parentElem + "  ." + compp);
-                        if(success_dt[compp]){
-                            tgt.empty();
-                            $("#compListTmpl").tmpl(success_dt[compp]).appendTo(tgt);
-                        }else{
-                            tgt.empty();
-                            $("#closeListTmpl").tmpl({}).appendTo(tgt);
-                        }
-                    });
 
-                });
-                
-            $("#list_toggle").fancybox({
-                type : "inline",
-                content : $("#list_files").html(),
-                height : 400,
-                width : 600,
-                'hideOnContentClick': true  
-            });  
-
-            }
-        );
-    }
-    
     function load_APIs_finish(){
         //事前条件： authorize が完了    
         $("#exec").removeAttr("disabled");
-        load_list();
+        $.pnotify({
+            title: "ロード完了",
+            text: "画面が使用できます。"
+            ,type : "info"
+        });
+        
     }
 </script>
     <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
-<!-- jQuery Template -->
-    <script id="closeListTmpl" type="text/x-jquery-tmpl">
-        <img src="images/close.png" class="comp_song_img"/>
-    </script>
-    <script id="compListTmpl" type="text/x-jquery-tmpl">
-        {{tmpl "#compUrlLinks"}}
-    </script>
-    <script id="compUrlLinks" type="text/x-jquery-tmpl">
-        {{each fields}}<a href="${$value.webContentLink}"><img src="images/done.png" class="comp_song_img" title="${$value.title}"/></a>&nbsp;{{/each}}
-    </script>
-<!-- jQuery Template -->
-    
-<body>
+<body style="display:none">
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>	
 		<h2><a href="index.html">RabidRabbit Web</a></h2>
                 <hr/><br/>
-		<div>
-		    <a href="index.html" id="welcome" class="menu">welcome</a>| 
-		    <a href="album_1st.html" id="1st" class="menu">1st album</a> | 
-		    <a href="tools.html" id="tools" class="menu current">tool</a> | 
+    <div>
+		<ul class="jq-menu">
+        <li><a href="index.html" id="welcome" class="menu current">welcome</a></li>
+		    <li><a href="album_1st.html" id="1st" class="menu">1st album</a> </li>
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->
-		</div>
+        <li><a hef="#">tools</a><ul>
+            <li><a href="tools.html" id="tools" class="menu">音源Upload</a> </li>
+            <li><a href="tools_list.html" id="tools" class="menu">Upload状況</a> </li>
+        </ul>
+            
+		</ul>
+    </div>
+    
 		<div class="contents" >
 			<div id="main_up"></div>
 			<div id="main">
@@ -242,23 +205,7 @@
     <span class="t">音源Upload</span>				
     <hr/>
     <p>uploadされたファイルはGoogle Driveにuploadされ、カレンダー登録されます。</p>
-    <br/><div id="list_toggle">進捗状況確認</div>
-        <div id="list_files" style="display: none">
-        <span class="t">進捗状況</span><hr/>
-        <br/>
-        <table class="song_comp_table"><thead>
-            <tr><th class="title">タイトル</th><th >G1</th><th>G2</th><th>Bass</th><th>Dr</th><th>Key</th><th>Vo</th></tr>
-            </thead>
-            <tbody>
-            <tr id="0B3pnnGKgIx1uWFYtT19vTy1KbDQ"><td>その向こう</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
-            <tr id="0B3pnnGKgIx1uc05FdGo5Tlg2bXc"><td>川落ち</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
-            <tr id="0B3pnnGKgIx1uNVYteXZIRGZtcFE"><td>正しい世界</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
-            <tr id="0B3pnnGKgIx1uVG5mRVpnVEdZWjA"><td>自分記念日</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
-            <tr id="0B3pnnGKgIx1uZXFRX0NqNFhqQ2s"><td>NOW!</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
-            <tr id="0B3pnnGKgIx1ua1Vwanc3U2lpdzg"><td>春恋</td><td class="G1"></td><td class="G2"></td><td class="Bass"></td><td class="Dr"></td><td class="Key"></td><td class="Vo"></td></tr>
-            </tbody>
-        </table>
-    </div>
+    <br/>
     <FIELDSET style="padding:1px;width:20%;">
     <legend>曲名選択</legend>
     <div><input type="radio" name="title" value="その向こう"/><label>その向こう</label></div>
@@ -283,7 +230,6 @@
     音源ファイル選択　　<input type="file" id="file"> ==>
     登録されるファイル名<input type="text" id="fname" name="fname" value="" style="width:180px" readonly/>
     <br/><input class="ui-button" type="button" id="exec" name="exec" value="upload" disabled/>
-    <div id="list"></div>
 					</form>
 				</div>
 			</div>
