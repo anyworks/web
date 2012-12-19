@@ -59,7 +59,6 @@
 
             }
         );
-
     }
   
   
@@ -73,7 +72,6 @@
             $.when.apply(null,apis).then(
                 function(success_dt){
                     //事前条件： authorize が完了
-                    
                     load_list();
                     
                     $.pnotify({
@@ -83,14 +81,21 @@
 
                 },function(fail_dt){
                     $.pnotify({
-                        title: "ドキュメントUploadが許可されていません。",
-                        text: "『googleにログインしている』且つ、『Upload許可権限が与えられている』場合にのみ、使用可能です。",
+                        title: "APIのロードに失敗しました。",
+                        text: "このメッセージは、Google側のエラー、又はアプリの認可設定の不整合により発生します。",
                         type:"error"
                     });
                     return ;
                 }
             );
-        });
+        },function(e){
+            $.pnotify({
+                title: "認可に失敗:" + e.join(","),
+                text: "googleにログインして再度実行してください。",
+                type:"error"
+            });
+        }
+        );
     }
 	
     function require_tools_finish(){
