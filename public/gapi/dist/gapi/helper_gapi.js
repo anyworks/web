@@ -77,8 +77,8 @@ helper.gapi.functions.authorize = function(scopeNames,force,immed){
         if((!gapi.auth || !gapi.auth.getToken())){
             console.log(gapi.auth);
             if(!force){
-                console.log("rejected:" + res);
-                df.reject("rejected");
+                console.log("rejected:" + scopeNames.join(","));
+                df.reject(scopeNames);
             }else{
                 console.log("auth fail[force mode]");
                 df.resolve("auth fail[force mode]");

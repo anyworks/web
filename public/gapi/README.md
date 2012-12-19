@@ -42,7 +42,7 @@ google APIs client load( **use jQuery.Deferred** )
 2. **a**synchronously load "client APIs"
 
 ```javascript
-	function jsLoaded(){
+	function require_tools_finish(){
 		helper.gapi.functions.authorize(["drive","calendar"]).done(function(res){
 		  var apis = [
 		      helper.gapi.functions.loadBy("drive","v2"),
