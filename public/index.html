@@ -11,7 +11,14 @@
 <link href="css/jqsimplemenu.css" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">
-    function require_check_client_finish(){
+    function require_use(module){
+        define(['jquery','jquery.splmenu'],loadFinish);
+    }
+    
+    function loadFinish(){
+        $(document.body).css("display","");
+        $('.jq-menu').jqsimplemenu();
+        
 //        if (Modernizr.touch) {
 //            $('#main').live('swipeleft',swipe_left);
   //          $('#main').live('swiperight',swipe_right);
@@ -43,7 +50,7 @@
     }
 
 </script>
-    <script data-main="javascripts/require_chk_client"  src="javascripts/libs/require.js"></script>    
+    <script data-main="javascripts/require_def"  src="javascripts/libs/require.js"></script>    
 
 </head>
 <body style="display:none">
@@ -53,7 +60,7 @@
 		<h2><a href="index.html">RabidRabbit Web</a></h2>
                 <hr/>
                 <div>
-		<ul class="jq-menu">
+	<ul  class="jq-menu">
         <li><a href="index.html" id="welcome" class="menu current">welcome</a></li>
 		    <li><a href="album_1st.html" id="1st" class="menu">1st album</a> </li>
 <!--                    <a href="album_2nd.html">2nd Album</a> | -->

@@ -134,7 +134,21 @@
           });
       }
 	
-    function require_tools_finish(){        
+    function require_use(module){
+        define(['jquery','any.gapi.const','any.gapi.util','jquery.tmpl','jquery.pnotify','jquery.splmenu','gapi'],loaded);
+    }
+  
+    function loaded(){        
+        $(document.body).css("display","");
+        $('.jq-menu').jqsimplemenu();
+        $.pnotify.defaults.styling = "jqueryui";
+        if (!('console' in window)) {
+                window.console = {};
+                window.console.log = function(str){
+                return str;
+            };
+        }
+
         $.pnotify({
             title: "ライブラリをロードしています....",
             text: "ロード完了後にuploadボタンが有効化され使用できるようになります。"
@@ -178,7 +192,7 @@
         
     }
 </script>
-    <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
+    <script data-main="javascripts/require_def"  src="javascripts/libs/require.js"></script>
 <body style="display:none">
 	<div id="container">
 		<h1>NO MUSIC,NO LIFE</h1>	

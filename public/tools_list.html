@@ -98,7 +98,21 @@
         );
     }
 	
-    function require_tools_finish(){
+    function require_use(module){
+        define(['jquery','any.gapi.const','any.gapi.util','jquery.tmpl','jquery.pnotify','jquery.splmenu','gapi'],loaded);
+    }
+  
+    function loaded(){
+                $(document.body).css("display","");
+                $('.jq-menu').jqsimplemenu();
+                $.pnotify.defaults.styling = "jqueryui";
+                if (!('console' in window)) {
+                        window.console = {};
+                        window.console.log = function(str){
+                        return str;
+                    };
+                }
+
         load_APIs();
         $(":input").focus(function(){
             $(this).css("background","#DFEEFF");
@@ -108,7 +122,7 @@
     }
 </script>
 
-    <script data-main="javascripts/require_tools"  src="javascripts/libs/require.js"></script>
+    <script data-main="javascripts/require_def"  src="javascripts/libs/require.js"></script>
     <script id="closeListTmpl" type="text/x-jquery-tmpl">
         <!--<img src="images/close.png" class="comp_song_img"/>-->&nbsp;
     </script>

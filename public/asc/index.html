@@ -1,0 +1,90 @@
+<!DOCTYPE html> 
+<html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name = "viewport" content = "user-scalable=0,width=device-width,initial-scale=1,maximum-scale=1" />
+<meta charset="UTF-8" />
+<title>ascensor test</title>
+<meta http-equiv="content-script-type" content="text/javascript" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<style type="text/css" media="screen">/*<![CDATA[ */
+body{overflow: hidden;background-color: green;padding:0;margin: 0;}
+
+div{
+    overflow:hidden;
+}
+
+#navigationMap{
+	position: fixed;
+	right:20px;
+	bottom:50px;
+	width: 140px;
+	height:40px;
+	z-index: 999;
+}
+#navigationMap ul li a{
+	background: #eee;
+	height:20px;
+	width: 20px;
+	border-radius:4px;
+	position: fixed;
+}
+li {
+list-style-type: none;	
+}
+
+#navigationMap .ascensorLink1{
+}
+#navigationMap .ascensorLink2{
+	margin-top: 30px;
+}
+#navigationMap .ascensorLinkActive{
+	background: #333;
+}
+#navigationMap .ascensorLink:hover{
+	background:#444;
+}
+
+#ascensorFloor1{
+	background: #F9B233;	
+}
+#ascensorFloor2{
+	background: #71B5E5;	
+}
+/* ]]>*/</style>
+<script type="text/javascript">
+	
+    function require_use(module){
+	module.useDefault(require_finish);
+    }
+    function require_finish(){
+        $('#ascensor').ascensor({
+		AscensorFloorName:'Home | next',
+		Direction:'chocolate',
+		AscensorMap:'1|1 & 2|1'
+        });
+    }
+    
+</script>
+<script data-main="../javascripts/require_def.js" src="../javascripts/libs/require.js"></script>
+</head>
+<body>
+    <div id="navigationMap">
+    <ul>
+        <li><a class="ascensorLink ascensorLink1"></a></li>
+        <li><a class="ascensorLink ascensorLink2"></a></li>
+    </ul>    
+</div>    
+<div id="ascensor">
+    <div>
+        <h1>Home</h1>
+    //floor one content here
+    </div>
+    <div>
+        <h1>next</h1>
+    //floor two content here
+    </div>
+</div>
+</body>
+</html>

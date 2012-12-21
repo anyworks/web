@@ -11,16 +11,16 @@
 <link href="css/jqsimplemenu.css" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">
-    function require_check_client_finish(){
-        if (Modernizr.touch) {
-//            $('#main').live('swipeleft',function(){$("1st").trigger("click")});
-            
-        } else {
-        }
+    function require_use(module){
+        define(['jquery','jquery.splmenu'],loaded);
     }
     
+    function loaded(){
+        $(document.body).css("display","");
+        $('.jq-menu').jqsimplemenu();
+    }
 </script>
-<script data-main="javascripts/require_chk_client"  src="javascripts/libs/require.js"></script>    
+<script data-main="javascripts/require_def"  src="javascripts/libs/require.js"></script>    
 </head>
 <body style="display: none">
 
